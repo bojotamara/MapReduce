@@ -2,14 +2,15 @@
 #include "threadpool.h"
 #include <iostream>
 
+
 // Main thread that runs this function is master thread
 // Map function is user defined
 void MR_Run(int num_files, char *filenames[], Mapper map, int num_mappers, Reducer concate, int num_reducers) {
-    ThreadPool_t *thread_pool = ThreadPool_create(num_mappers); 
+    ThreadPool_t *thread_pool = ThreadPool_create(num_mappers);
     thread_func_t map_pointer = *((thread_func_t) map);
 
     for (int i = 0; i < num_files; i++) {
-        ThreadPool_add_work(thread_pool, map_pointer, &(filenames[i]));
+        ThreadPool_add_work(thread_pool, map_pointer, filenames[i]);
     }
 }
 

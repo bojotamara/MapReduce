@@ -4,24 +4,22 @@
 #include <queue>
 #include <vector> 
 #include <stdbool.h>
+#include <sys/stat.h>
 
 typedef void (*thread_func_t)(void *arg);
 
 typedef struct ThreadPool_work_t {
     thread_func_t func;              // The function pointer
     void *arg;                       // The arguments for the function
-    bool operator<(const ThreadPool_work_t &o) const 
-    {   
-        //TODO: IMPLEMENT using STAT()
-        //return a < o.a;
-    }
 } ThreadPool_work_t;
 
 typedef struct {
-    std::priority_queue<ThreadPool_work_t> pq;
-    void add(ThreadPool_work_t task) {
-        pq.push(task);
-    }
+    bool operator() (ThreadPool_work_t const &a, ThreadPool_work_t const &b);
+} largest_job_first;
+
+typedef struct {
+    std::priority_queue<ThreadPool_work_t, std::vector<ThreadPool_work_t>, largest_job_first> pq;
+    void add(ThreadPool_work_t task);
 } ThreadPool_work_queue_t;
 
 typedef struct {
