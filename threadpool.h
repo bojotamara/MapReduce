@@ -1,6 +1,6 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
-//#include <pthread.h>
+#include <pthread.h>
 #include <queue>
 #include <vector> 
 #include <stdbool.h>
@@ -14,16 +14,22 @@ typedef struct ThreadPool_work_t {
 } ThreadPool_work_t;
 
 typedef struct {
-    bool operator() (ThreadPool_work_t const &a, ThreadPool_work_t const &b);
+    bool operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b);
 } largest_job_first;
 
 typedef struct {
-    std::priority_queue<ThreadPool_work_t, std::vector<ThreadPool_work_t>, largest_job_first> pq;
-    void add(ThreadPool_work_t task);
+    std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, largest_job_first> pq;
+    void ThreadPool_work_queue_t();
+    void add(ThreadPool_work_t * task);
+    ThreadPool_work_t * get();
 } ThreadPool_work_queue_t;
 
 typedef struct {
     ThreadPool_work_queue_t task_queue;
+    pthread_t * threads;
+    bool termination_requested;
+    pthread_mutex_t task_queue_mutex;
+    pthread_cond_t tasks_available_cond;
 } ThreadPool_t;
 
 
@@ -62,12 +68,12 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg);
 * Return:
 *     ThreadPool_work_t* - The next task to run
 */
-ThreadPool_work_t *ThreadPool_get_work(ThreadPool_t *tp);
+ThreadPool_work_t * ThreadPool_get_work(ThreadPool_t *tp);
 
 /**
 * Run the next task from the task queue
 * Parameters:
 *     tp - The ThreadPool Object this thread belongs to
 */
-void *Thread_run(ThreadPool_t *tp);
+void *Thread_run(void *tp);
 #endif

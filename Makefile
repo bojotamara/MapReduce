@@ -1,5 +1,5 @@
 CC      = g++
-CFLAGS  = -std=c++11 -Wall -pthread
+CFLAGS  = -pthread -std=c++11 -Wall 
 SOURCES_CC = $(wildcard *.cc)
 SOURCES_C = $(wildcard *.c)
 OBJECTS_CC = $(SOURCES_CC:%.cc=%.o)
@@ -10,7 +10,7 @@ all: wc
 wc: wordcount
 
 wordcount: $(OBJECTS_CC) $(OBJECTS_C)
-	$(CC) -o wordcount $(OBJECTS_CC) $(OBJECTS_C)
+	$(CC) -o wordcount $(OBJECTS_CC) $(OBJECTS_C) -pthread
 
 compile: $(OBJECTS_CC) $(OBJECTS_C)
 
