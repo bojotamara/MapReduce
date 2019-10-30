@@ -63,7 +63,6 @@ void MR_Emit(char *key, char *value) {
     // Obtain the lock for the desired partition and add the key/value pair
     pthread_mutex_lock(&partitions[partition_number].partition_mutex);
     partitions[partition_number].map.insert({key_dup, value});
-    partitions[partition_number].keys.insert(key_dup);
     pthread_mutex_unlock(&partitions[partition_number].partition_mutex);
 }
 
