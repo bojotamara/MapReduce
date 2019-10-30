@@ -1,5 +1,5 @@
 CC      = g++
-CFLAGS  = -pthread -std=c++11 -Wall 
+CFLAGS  = -pthread -std=c++11 -Wall -O2
 SOURCES_CC = $(wildcard *.cc)
 SOURCES_C = $(wildcard *.c)
 OBJECTS_CC = $(SOURCES_CC:%.cc=%.o)
@@ -21,7 +21,10 @@ compile: $(OBJECTS_CC) $(OBJECTS_C)
 	${CC} ${CFLAGS} -c $^
 
 clean:
-	@rm -f *.o wordcount
+	@rm -f *.o wordcount result-*.txt
+
+clean-result:
+	@rm result-*.txt
 
 compress:
 	zip mapreduce.zip README.md Makefile *.cc *.c *.h

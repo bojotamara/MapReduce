@@ -2,3 +2,6 @@ a2-testcase
 distwc-test-cases
 distwc.c
 .vscode
+.idea
+cmake-build-debug
+*.txt

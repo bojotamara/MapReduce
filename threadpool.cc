@@ -39,7 +39,7 @@ ThreadPool_work_t * ThreadPool_work_queue_t::get() {
 ThreadPool_t *ThreadPool_create(int num) {
     ThreadPool_work_queue_t queue;
     ThreadPool_t * threadpool = new ThreadPool_t;
-    *threadpool = {queue, new pthread_t[num], false};
+    *threadpool = {queue, new pthread_t[num], num, false};
 
     pthread_cond_init(&threadpool->tasks_available_cond, 0);
     pthread_mutex_init(&threadpool->task_queue_mutex, 0);
@@ -52,6 +52,13 @@ ThreadPool_t *ThreadPool_create(int num) {
 }
 
 void ThreadPool_destroy(ThreadPool_t *tp) {
+    //Signal work is done with a null job
+    ThreadPool_add_work(tp, NULL, NULL);
+
+    for (int i=0; i < tp->num_threads; i++) {
+        pthread_join(tp->threads[i], NULL);
+    }
+
     delete tp->threads;
     pthread_mutex_destroy(&tp->task_queue_mutex);
     pthread_cond_destroy(&tp->tasks_available_cond);
@@ -65,6 +72,7 @@ bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
     tp->task_queue.add(job);
     pthread_cond_signal(&tp->tasks_available_cond);
     pthread_mutex_unlock(&tp->task_queue_mutex);
+    return true;
 }
 
 ThreadPool_work_t * ThreadPool_get_work(ThreadPool_t *tp) {
@@ -74,7 +82,6 @@ ThreadPool_work_t * ThreadPool_get_work(ThreadPool_t *tp) {
 // Get's a task from the task queue and executes it
 void *Thread_run(void *tp) {
     ThreadPool_t * threadpool = (ThreadPool_t *) tp;
-    
     while (true) {
         pthread_mutex_lock(&threadpool->task_queue_mutex);
         while (threadpool->task_queue.pq.size() == 0 && threadpool->termination_requested == false) {
@@ -92,9 +99,7 @@ void *Thread_run(void *tp) {
 
         pthread_mutex_unlock(&threadpool->task_queue_mutex);
 
-        std::cout << "executing task!" << std::endl;
         job->func(job->arg);
-        std::cout << "task finished!" << std::endl;
     }
     pthread_exit(0);
 }

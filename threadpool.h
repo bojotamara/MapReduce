@@ -27,6 +27,7 @@ typedef struct {
 typedef struct {
     ThreadPool_work_queue_t task_queue;
     pthread_t * threads;
+    int num_threads;
     bool termination_requested;
     pthread_mutex_t task_queue_mutex;
     pthread_cond_t tasks_available_cond;
