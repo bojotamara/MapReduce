@@ -49,11 +49,6 @@ void MR_Run(int num_files, char *filenames[], Mapper map, int num_mappers, Reduc
 // takes a key and a value associated with it, and writes this pair to a specific partition
 // which is determined by passing the key to the MR Partition library function.
 void MR_Emit(char *key, char *value) {
-    //This is to ensure null characters don't get thru. Idk why this started to happen
-    if (key != NULL && key[0] == '\0') {
-        return;
-    }
-
     // Copy the char * since the calling function may free it
     char * key_dup = strdup(key);
 
