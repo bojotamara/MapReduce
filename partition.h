@@ -2,18 +2,22 @@
 
 #include <pthread.h>
 #include <map>
-#include <set>
 #include <string.h>
 
-struct cstrless {
+// Comparator struct that allows the sorting of char * keys
+struct CStringComparator {
     bool operator()(char* a, char* b) {
         return strcmp(a, b) < 0;
     }
 };
 
+// Struct for the intermediate data structure used by the mappers and reducer
 struct Partition
 {   
-    std::multimap<char *, char *, cstrless> map;
-    std::multimap<char *, char *, cstrless>::iterator iterator;
-    pthread_mutex_t partition_mutex;
+    // holds the key/value pairs
+    std::multimap<char *, char *, CStringComparator> map;
+    // pointer that references the current key/value pair the reducer is processing
+    std::multimap<char *, char *, CStringComparator>::iterator iterator;
+    // mutex lock for the partition
+    pthread_mutex_t partition_mutex = PTHREAD_MUTEX_INITIALIZER;
 };

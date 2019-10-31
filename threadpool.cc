@@ -100,6 +100,7 @@ void *Thread_run(void *tp) {
         pthread_mutex_unlock(&threadpool->task_queue_mutex);
 
         job->func(job->arg);
+        delete job;
     }
     pthread_exit(0);
 }
