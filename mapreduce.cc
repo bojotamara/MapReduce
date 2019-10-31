@@ -34,7 +34,6 @@ void MR_Run(int num_files, char *filenames[], Mapper map, int num_mappers, Reduc
 
     pthread_t r_threads[R];
     for (int i = 0; i < R; i++){
-        partitions[i].iterator = partitions[i].map.begin();
         pthread_create(&r_threads[i], NULL, (void *(*)(void *)) MR_ProcessPartition, (void *) (intptr_t)i);
     } 
 
@@ -74,6 +73,7 @@ unsigned long MR_Partition(char *key, int num_partitions) {
 // it. It invokes the user-defined Reduce function in a loop, each time passing it the next unprocessed key. This
 // continues until all keys in the partition are processed.
 void MR_ProcessPartition(int partition_number) {
+    partitions[partition_number].iterator = partitions[partition_number].map.begin();
     while (partitions[partition_number].iterator != partitions[partition_number].map.end()) {
         reduce(partitions[partition_number].iterator->first, partition_number);
     }
