@@ -2,13 +2,10 @@
 
 #include <pthread.h>
 #include <map>
-#include <string.h>
 
 // Comparator struct that allows the sorting of char * keys
 struct CStringComparator {
-    bool operator()(char* a, char* b) {
-        return strcmp(a, b) < 0;
-    }
+    bool operator()(char* a, char* b);
 };
 
 // Struct for the intermediate data structure used by the mappers and reducer
