@@ -2,30 +2,38 @@
 #define THREADPOOL_H
 #include <pthread.h>
 #include <queue>
-#include <vector> 
-#include <stdbool.h>
-#include <sys/stat.h>
+#include <vector>
 
+//Defines a function that a thread can run
 typedef void (*thread_func_t)(void *arg);
 
+// Defines the work to do
 typedef struct ThreadPool_work_t {
     thread_func_t func;              // The function pointer
     void *arg;                       // The arguments for the function
 } ThreadPool_work_t;
 
+// Comparator struct that allows the sorting of work based on the LJF algorithm
 typedef struct {
     bool operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b);
-} largest_job_first;
+} LargestJobFirst;
 
+// The work queue that the threadpool receives tasks from
 typedef struct {
-    std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, largest_job_first> pq;
-    void ThreadPool_work_queue_t();
-    void add(ThreadPool_work_t * task);
-    ThreadPool_work_t * get();
+    private:
+        // the underlying implementation is a priority queue
+        std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, LargestJobFirst> queue;
+        int size;
+    public:
+        void ThreadPool_work_queue_t();
+        void add(ThreadPool_work_t * task);
+        ThreadPool_work_t * get();
+        int getSize();
 } ThreadPool_work_queue_t;
 
+// The threadpool struct
 typedef struct {
-    ThreadPool_work_queue_t task_queue;
+    ThreadPool_work_queue_t * task_queue;
     pthread_t * threads;
     int num_threads;
     bool termination_requested;
