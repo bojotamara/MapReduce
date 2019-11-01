@@ -21,15 +21,6 @@ bool LargestJobFirst::operator() (const ThreadPool_work_t * a, const ThreadPool_
 }
 
 /**
- * @brief Constructor for the threadpool work queue.
- */
-void ThreadPool_work_queue_t::ThreadPool_work_queue_t() {
-    std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, LargestJobFirst> pq;
-    queue = pq;
-    size=0;
-}
-
-/**
  * @brief Adds a task to the work queue.
  * 
  * @param task - Pointer to the ThreadPool_work_t task
@@ -93,7 +84,7 @@ void ThreadPool_destroy(ThreadPool_t *tp) {
         pthread_join(tp->threads[i], NULL);
     }
 
-    delete tp->threads;
+    delete[] tp->threads;
     delete tp->task_queue;
     pthread_mutex_destroy(&tp->task_queue_mutex);
     pthread_cond_destroy(&tp->tasks_available_cond);
@@ -149,6 +140,7 @@ void *Thread_run(void *tp) {
             threadpool->termination_requested = true;
             pthread_mutex_unlock(&threadpool->task_queue_mutex);
             pthread_cond_broadcast(&threadpool->tasks_available_cond);
+            delete job;
             break;
         }
 

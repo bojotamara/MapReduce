@@ -5,6 +5,7 @@
 #include <string.h>
 #include <iostream>
 #include <unistd.h>
+#include <stdlib.h>
 
 int R;
 Reducer reduce;
@@ -52,6 +53,9 @@ void MR_Run(int num_files, char *filenames[], Mapper map, int num_mappers, Reduc
     // Perform clean-up
     for (int i=0; i < R; i++) {
         pthread_mutex_destroy(&partitions[i].partition_mutex);
+        for (auto it = partitions[i].map.begin(); it != partitions[i].map.end(); ++it) {
+            free(it->first);
+        }
     }
     delete []partitions;
 }
@@ -123,8 +127,8 @@ void MR_ProcessPartition(int partition_number) {
 char *MR_GetNext(char *key, int partition_number) {
     // If iterator points to different key, then we have reached the end of that key's values
     if (partitions[partition_number].iterator == partitions[partition_number].map.end() 
-        || strcmp(key, partitions[partition_number].iterator->first) != 0) {
-       return NULL;
+                    || strcmp(key, partitions[partition_number].iterator->first) != 0) {
+        return NULL;
     }
     char * value = partitions[partition_number].iterator->second;
     partitions[partition_number].iterator++;

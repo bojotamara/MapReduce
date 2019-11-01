@@ -8,38 +8,38 @@
 typedef void (*thread_func_t)(void *arg);
 
 // Defines the work to do
-typedef struct ThreadPool_work_t {
+struct ThreadPool_work_t {
     thread_func_t func;              // The function pointer
     void *arg;                       // The arguments for the function
-} ThreadPool_work_t;
+};
 
 // Comparator struct that allows the sorting of work based on the LJF algorithm
-typedef struct {
+struct LargestJobFirst {
     bool operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b);
-} LargestJobFirst;
+};
 
 // The work queue that the threadpool receives tasks from
-typedef struct {
+struct ThreadPool_work_queue_t {
     private:
         // the underlying implementation is a priority queue
         std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, LargestJobFirst> queue;
         int size;
     public:
-        void ThreadPool_work_queue_t();
+        ThreadPool_work_queue_t(): queue(), size(0) {};
         void add(ThreadPool_work_t * task);
         ThreadPool_work_t * get();
         int getSize();
-} ThreadPool_work_queue_t;
+};
 
 // The threadpool struct
-typedef struct {
+struct ThreadPool_t {
     ThreadPool_work_queue_t * task_queue;
     pthread_t * threads;
     int num_threads;
     bool termination_requested;
     pthread_mutex_t task_queue_mutex;
     pthread_cond_t tasks_available_cond;
-} ThreadPool_t;
+};
 
 
 /**
