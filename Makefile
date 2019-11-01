@@ -1,5 +1,5 @@
 CC      = g++
-CFLAGS  = -pthread -std=c++11 -Wall -O2
+CFLAGS  = -pthread -std=c++11 -Wall -Werror -O2
 SOURCES_CC = $(wildcard *.cc)
 SOURCES_C = $(wildcard *.c)
 OBJECTS_CC = $(SOURCES_CC:%.cc=%.o)

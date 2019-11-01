@@ -33,7 +33,10 @@ void MR_Run(int num_files, char *filenames[], Mapper map, int num_mappers, Reduc
     ThreadPool_t *threadpool = ThreadPool_create(num_mappers);
     thread_func_t map_pointer = *((thread_func_t) map);
     for (int i = 0; i < num_files; i++) {
-        ThreadPool_add_work(threadpool, map_pointer, filenames[i]);
+        bool success = ThreadPool_add_work(threadpool, map_pointer, filenames[i]);
+        while (!success) {// if it fails, try again
+            success = ThreadPool_add_work(threadpool, map_pointer, filenames[i]);
+        }
     }
 
     // Waits for work to finish and cleans up the threadpool. This is a blocking call.

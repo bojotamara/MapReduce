@@ -99,14 +99,26 @@ void ThreadPool_destroy(ThreadPool_t *tp) {
  * @param arg - Argument to the function
  */
 bool ThreadPool_add_work(ThreadPool_t *tp, thread_func_t func, void *arg) {
-    ThreadPool_work_t * job = new ThreadPool_work_t;
-    *job = {func, arg};
+    bool success = true;
+    ThreadPool_work_t * job;
+    try {
+        job = new ThreadPool_work_t;
+        *job = {func, arg};
+    }
+    catch(int n) {
+        return false;
+    }
+
     pthread_mutex_lock(&tp->task_queue_mutex);
-    tp->task_queue->add(job);
-    pthread_cond_signal(&tp->tasks_available_cond);
+    try {
+        tp->task_queue->add(job);
+        pthread_cond_signal(&tp->tasks_available_cond);
+    }
+    catch(int n) {
+        success = false;
+    }
     pthread_mutex_unlock(&tp->task_queue_mutex);
-    // TODO: ????
-    return true;
+    return success;
 }
 
 /**
