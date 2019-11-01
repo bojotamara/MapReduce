@@ -14,7 +14,7 @@ struct ThreadPool_work_t {
 };
 
 // Comparator struct that allows the sorting of work based on the LJF algorithm
-struct LargestJobFirst {
+struct LongestJobFirst {
     bool operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b);
 };
 
@@ -22,7 +22,7 @@ struct LargestJobFirst {
 struct ThreadPool_work_queue_t {
     private:
         // the underlying implementation is a priority queue
-        std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, LargestJobFirst> queue;
+        std::priority_queue<ThreadPool_work_t *, std::vector<ThreadPool_work_t *>, LongestJobFirst> queue;
         int size;
     public:
         ThreadPool_work_queue_t(): queue(), size(0) {};

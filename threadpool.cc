@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-// Compares the jobs based on file size. Larger file size means a larger job.
-bool LargestJobFirst::operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b) {
+// Compares the jobs based on file size. Larger file size means a longer job.
+bool LongestJobFirst::operator() (const ThreadPool_work_t * a, const ThreadPool_work_t * b) {
     struct stat st1, st2;
 
     // The 'null' job that signals the end of work always goes last
